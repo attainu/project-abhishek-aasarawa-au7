@@ -1,30 +1,34 @@
 import React from "react";
 import Container from "@material-ui/core/Container";
 import { ThemeProvider } from "@material-ui/core/styles";
+import { Switch } from "react-router-dom";
+import { map } from "lodash";
 
 // theme
 import theme from "./project.theme";
 
 // components
-import Navbar from "./client/components/NavBar/Navbar";
-import SignUp from "./client/components/SignUp/SignUp";
-import SignIn from "./client/components/SignIn/SignIn";
-import SignOut from "./client/components/SignOut/SignOut";
-import Profile from "./client/components/Profile/Profile";
-import Notification from "./client/components/Notification/Notification";
-import ForgetPassword from "./client/components/ForgetPassword/ForgetPassword";
+import MainStructure from "./MainStructure";
+import { PublicRoute, PrivateRoute } from "./client/components/routeManagments";
+
+// routes
+import routes from "./client/routes";
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="xl">
-        <Navbar />
-        <Notification />
-        <SignUp />
-        <SignIn />
-        <SignOut />
-        <Profile />
-        <ForgetPassword />
+        <MainStructure>
+          <Switch>
+            {map(routes, (route, idx) => {
+              return !!route.isProtected ? (
+                <PrivateRoute {...route} key={idx} />
+              ) : (
+                <PublicRoute {...route} key={idx} />
+              );
+            })}
+          </Switch>
+        </MainStructure>
       </Container>
     </ThemeProvider>
   );
