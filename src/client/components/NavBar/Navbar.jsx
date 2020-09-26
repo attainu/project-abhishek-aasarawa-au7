@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -32,6 +33,7 @@ const NavBar = (props) => {
     toggleProfile,
     isLogin,
     userName,
+    onDrawerClick,
   } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -141,26 +143,29 @@ const NavBar = (props) => {
   // return component ----------------------------------------------------------------
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           {/*start icon*/}
           <IconButton
             edge="start"
             className={classes.menuButton}
             color="secondary"
+            onClick={onDrawerClick}
           >
             <MenuIcon />
           </IconButton>
 
           {/*logo*/}
-          <Typography
-            color="secondary"
-            className={classes.title}
-            variant="h6"
-            noWrap
-          >
-            JS-NoteBook
-          </Typography>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Typography
+              color="secondary"
+              className={classes.title}
+              variant="h6"
+              noWrap
+            >
+              JS-NoteBook
+            </Typography>
+          </Link>
 
           {/*search bar*/}
           <div className={classes.search}>
