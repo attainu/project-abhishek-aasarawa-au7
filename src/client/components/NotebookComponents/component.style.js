@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
   component: {
     position: "relative",
-    minHeight: "50px",
+    minHeight: "100px",
     width: "100%",
     marginTop: 15,
     backgroundColor: fade(theme.palette.common.black, 0.01),
@@ -77,6 +77,17 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
     },
   },
+  expand_contract_icon: {
+    position: "absolute",
+    bottom: "5px",
+    right: "15px",
+    fontSize: 20,
+    color: fade(theme.palette.common.black, 0.25),
+    "&:hover": {
+      color: fade(theme.palette.common.black, 0.75),
+      cursor: "pointer",
+    },
+  },
   play_icon: {
     position: "absolute",
     top: "5px",
@@ -96,6 +107,51 @@ const useStyles = makeStyles((theme) => ({
     color: fade(theme.palette.common.black, 0.25),
     cursor: "grab",
     title: "Drag",
+  },
+  text_field: {
+    width: "91%",
+    margin: theme.spacing(3, 6, 2, 5),
+    overFlow: "hidden",
+    backgroundColor: fade(theme.palette.common.black, 0.001),
+    border: "none",
+    resize: "none",
+    "&:focus": {
+      outline: "none",
+      backgroundColor: fade(theme.palette.common.black, 0.001),
+    },
+  },
+  note_component: {
+    width: "91%",
+    margin: theme.spacing(3, 6, 2, 5),
+    fontSize: "10",
+    fontWeight: "normal",
+    fontFamily: "calibri",
+    textAlign: "justify",
+    textAlignLast: "center",
+    whiteSpace: "pre-wrap",
+  },
+  link_field: {
+    padding: theme.spacing(3, 6, 0, 5),
+  },
+  link_component: {
+    width: "91%",
+    margin: theme.spacing(3, 5.5, 2, 3),
+    fontSize: "10",
+    fontWeight: "normal",
+    fontFamily: "calibri",
+    textAlign: "center",
+    wordWrap: "break-word",
+  },
+  default_text: {
+    fontSize: 30,
+    fontStyle: "normal",
+    color: fade(theme.palette.common.black, 0.25),
+  },
+  link: {
+    textDecoration: "none",
+    "&:visited": {
+      color: "red",
+    },
   },
 }));
 
