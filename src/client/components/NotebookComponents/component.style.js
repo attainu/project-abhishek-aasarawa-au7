@@ -13,7 +13,20 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     minHeight: "100px",
     width: "100%",
-    height: "100px",
+    marginTop: 15,
+    backgroundColor: fade(theme.palette.common.black, 0.01),
+    borderRadius: 2.5,
+    boxShadow: "0px 0px 1px 1px rgba(0,0,0,0.4)",
+    padding: 2,
+    "&:hover": {
+      transform: "scale(1.015, 1.015)",
+    },
+  },
+  component_code: {
+    position: "relative",
+    minHeight: "210px",
+    width: "100%",
+    height: "210px",
     marginTop: 15,
     backgroundColor: fade(theme.palette.common.black, 0.01),
     borderRadius: 2.5,
@@ -27,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     minHeight: "300px",
     width: "100%",
-    height: "200px",
+    height: "300px",
     marginTop: 15,
     backgroundColor: fade(theme.palette.common.black, 0.01),
     borderRadius: 2.5,
@@ -46,6 +59,34 @@ const useStyles = makeStyles((theme) => ({
   },
   move_shrink_component: {
     marginLeft: "10%",
+  },
+  result_component: {
+    position: "absolute",
+    display: "flex",
+    flexDirection: "column",
+    width: "99%",
+    height: "85%",
+    top: "42px",
+    overflow: "auto",
+    paddingLeft: "20px",
+    // alignItems: "center",
+    // justifyContent: "center",
+    fontFamily:
+      "Courier New, Courier, monospace, Times New Roman, Times, serif",
+    backgroundColor: theme.palette.common.white,
+  },
+  result_component_black: {
+    backgroundColor: fade(theme.palette.common.black, 0.8),
+  },
+  result_component_white: {
+    backgroundColor: theme.palette.common.white,
+  },
+  result_content: {
+    margin: "15px 0 0 0",
+    fontSize: 15,
+  },
+  result_content_black: {
+    color: "red",
   },
   output: {
     color: "red",
@@ -160,6 +201,42 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     "&:visited": {
       color: "red",
+    },
+  },
+  chart_header: {
+    width: "91%",
+    margin: theme.spacing(4, 3, -1, 3),
+    padding: theme.spacing(1),
+    textAlign: "center",
+  },
+  chart_component: {
+    width: "91%",
+    margin: theme.spacing(-2, 0.7, 2, 7.3),
+    padding: theme.spacing(1, 4),
+    textAlign: "center",
+    height: "65%",
+    overflowY: "scroll",
+  },
+  chart_feild_wrapper: {
+    position: "relative",
+  },
+  chart_feild_icon: {
+    position: "absolute",
+    top: "30%",
+    right: "5%",
+  },
+  chart_feild_index: {
+    position: "absolute",
+    top: "30%",
+    left: "-8%",
+    color: fade(theme.palette.common.black, 0.5),
+  },
+  chart_icons: {
+    cursor: "pointer",
+    color: fade(theme.palette.common.black, 0.25),
+    "&:hover": {
+      color: fade(theme.palette.common.black, 0.75),
+      cursor: "pointer",
     },
   },
 }));

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
 import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { sortableElement, sortableHandle } from "react-sortable-hoc";
 import { map } from "lodash";
 import { MenuItem, Select } from "@material-ui/core";
+import axios from "axios";
 
 //styles
 import useStyles from "../component.style";
@@ -22,6 +23,9 @@ import ResultComponent from "./Result";
 // reducer action
 import { UPDATE_COMPONENTS } from "../../../redux/actions/notebooks.action";
 import { SET_NOTIFICATION } from "../../../redux/actions/notification.action";
+
+// axios config
+import createConfig from "../../AppStructure/Profile/form_axios.config";
 
 const CodeComponent = ({
   component,
@@ -54,6 +58,10 @@ const CodeComponent = ({
     "solarized_light",
   ];
 
+  useEffect(() => {
+    setCode(component.value);
+  }, [component.value]);
+
   // Theme Change Handler
   const handleThemeChange = (e) => {
     setTheme(e.target.value);
@@ -73,30 +81,50 @@ const CodeComponent = ({
   const [result, setResult] = useState([]);
 
   // code runner
-  const evaluate_code = () => {
-    console.oldLog = console.log;
+  const evaluate_code = async () => {
+    let formData = new FormData();
+    formData.append("code", code);
     let resultArr = [];
-    // overriding console.log function
-    console.log = function (value) {
-      if (!value) resultArr.push("value undefined");
-      resultArr.push(value);
-      return resultArr;
-    };
-
     try {
-      // eslint-disable-next-line
-      let result_data = eval(
-        `try{${code}}catch(err){throw new Error("Wrong code")}`
+      let response = await axios.post(
+        "http://localhost:5000/api/public/compile",
+        formData,
+        createConfig()
       );
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        console.log(e.message);
-      } else {
-        console.log(e.message);
+
+      resultArr = response.data.data.result.split("\n");
+
+      // compilattion successful
+      setNotification({
+        open: true,
+        severity: "success",
+        msg: response.data.msg,
+      });
+
+      setResult(resultArr);
+    } catch (error) {
+      if (!!error.response.data.data.err) {
+        if (!!error.response.data.data.err.error)
+          resultArr.push(`>>> ${error.response.data.data.err.error}`);
+        if (!!error.response.data.data.err.errorCause)
+          resultArr.push(error.response.data.data.err.errorCause);
+        if (!!error.response.data.data.err.errorType)
+          resultArr.push(
+            `ErrorType: ${error.response.data.data.err.errorType}`
+          );
       }
+
+      setResult(resultArr);
+
+      // compilattion failed
+      setNotification({
+        open: true,
+        severity: "error",
+        msg: !!error.response.data
+          ? error.response.data.msg
+          : "internal error, try again!!",
+      });
     }
-    setResult(resultArr);
-    console.log = console.oldLog;
   };
 
   const playHandler = () => {
@@ -122,7 +150,7 @@ const CodeComponent = ({
   };
 
   return (
-    <div className={classes.split_wrapper}>
+    <div className={classes.split_wrapper} onBlur={() => saveHandler(idx)}>
       <div
         className={classes.component_wrapper}
         key={idx}
@@ -131,7 +159,7 @@ const CodeComponent = ({
         <h3 className={classes.input}>{`In [ ${idx + 1} ] : `}</h3>
         <div
           className={clsx({
-            [classes.component]: !run,
+            [classes.component_code]: !run,
             [classes.shrink_component]: run,
           })}
           style={{ height: "200px" }}

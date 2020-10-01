@@ -45,10 +45,6 @@ const NewNotebook = (props) => {
     props.deleteComponent(props.notebookId, idx);
   };
 
-  const editHandler = (idx) => {
-    console.log("component to be edited - ", idx);
-  };
-
   const editTitleHandler = () => {
     setFlag(true);
     console.log("edit");
@@ -171,7 +167,6 @@ const NewNotebook = (props) => {
                     idx={idx}
                     component={component}
                     deleteHandler={deleteHandler}
-                    editHandler={editHandler}
                   />
                 );
               case "Code":
@@ -182,7 +177,6 @@ const NewNotebook = (props) => {
                     index={idx}
                     idx={idx}
                     deleteHandler={deleteHandler}
-                    editHandler={editHandler}
                   />
                 );
               case "Image":
