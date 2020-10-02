@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
 import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
@@ -21,12 +21,16 @@ import CodeEditor from "./CodeEditor";
 import ResultComponent from "./Result";
 
 // reducer action
-import { UPDATE_COMPONENTS } from "../../../redux/actions/notebooks.action";
+import {
+  UPDATE_COMPONENTS,
+  UPDATE_NOTEBOOK,
+} from "../../../redux/actions/notebooks.action";
 import { SET_NOTIFICATION } from "../../../redux/actions/notification.action";
 
 // axios config
 import createConfig from "../../AppStructure/Profile/form_axios.config";
 
+// component ----------------------------------------------------------------------------------------
 const CodeComponent = ({
   component,
   idx,
@@ -35,13 +39,34 @@ const CodeComponent = ({
   updateComponent,
   notebookId,
   setNotification,
+  runAll,
+  clearRunAll,
 }) => {
   const classes = useStyles();
 
   // code state
   const [code, setCode] = useState(
-    !!component.value ? component.value : `// Type your code here\n`
+    !!component.value && !!component.value.code
+      ? component.value.code
+      : `// Type your code here\n`
   );
+
+  // result state
+  const [result, setResult] = useState(
+    !!component.value && !!component.value.result ? component.value.result : []
+  );
+
+  // setting state from redux state
+  useEffect(() => {
+    console.log("I am running...");
+    if (!!component.value) {
+      setCode(component.value.code);
+      setResult(component.value.result);
+    } else {
+      setCode("");
+      setResult([]);
+    }
+  }, [component.value]);
 
   // theme state
   const [theme, setTheme] = useState("monokai");
@@ -58,10 +83,6 @@ const CodeComponent = ({
     "solarized_light",
   ];
 
-  useEffect(() => {
-    setCode(component.value);
-  }, [component.value]);
-
   // Theme Change Handler
   const handleThemeChange = (e) => {
     setTheme(e.target.value);
@@ -77,11 +98,9 @@ const CodeComponent = ({
   // for running code
   const [run, setRun] = useState(false);
 
-  // result state
-  const [result, setResult] = useState([]);
-
   // code runner
-  const evaluate_code = async () => {
+
+  const evaluate_code = useCallback(async () => {
     let formData = new FormData();
     formData.append("code", code);
     let resultArr = [];
@@ -94,7 +113,7 @@ const CodeComponent = ({
 
       resultArr = response.data.data.result.split("\n");
 
-      // compilattion successful
+      // compilation successful
       setNotification({
         open: true,
         severity: "success",
@@ -116,7 +135,7 @@ const CodeComponent = ({
 
       setResult(resultArr);
 
-      // compilattion failed
+      // compilation failed
       setNotification({
         open: true,
         severity: "error",
@@ -125,7 +144,8 @@ const CodeComponent = ({
           : "internal error, try again!!",
       });
     }
-  };
+    updateComponent(notebookId, idx, { code, result: resultArr });
+  }, [code, setNotification, updateComponent, idx, notebookId]);
 
   const playHandler = () => {
     setRun(true);
@@ -141,7 +161,7 @@ const CodeComponent = ({
   };
 
   const saveHandler = (idx) => {
-    updateComponent(notebookId, idx, code);
+    updateComponent(notebookId, idx, { code, result });
     setNotification({
       open: true,
       severity: "success",
@@ -149,6 +169,20 @@ const CodeComponent = ({
     });
   };
 
+  // ---------------------------------------
+
+  // use effect to run code snippets on run all and then disable it
+  useEffect(() => {
+    if (runAll) {
+      setRun(true);
+      evaluate_code();
+      clearRunAll(notebookId);
+    }
+  }, [evaluate_code, runAll, clearRunAll, notebookId]);
+
+  // ---------------------------------------
+
+  // return -------------------------------------------------------------------------------
   return (
     <div className={classes.split_wrapper} onBlur={() => saveHandler(idx)}>
       <div
@@ -249,6 +283,12 @@ const mapActionToProps = (dispatch) => {
       dispatch({
         type: SET_NOTIFICATION,
         payload: { ...data },
+      });
+    },
+    clearRunAll: (id) => {
+      dispatch({
+        type: UPDATE_NOTEBOOK,
+        payload: { id, name: "runAll", value: false },
       });
     },
   };

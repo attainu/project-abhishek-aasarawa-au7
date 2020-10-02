@@ -28,6 +28,7 @@ import {
 } from "./Charts";
 import ChartInput from "./ChartInput";
 
+// component -------------------------------------------------------------------------------
 const ChartComponent = ({
   component,
   idx,
@@ -81,6 +82,15 @@ const ChartComponent = ({
         chart: component.value.chart,
         description: component.value.description,
       });
+    else {
+      setData({
+        title: "",
+        labels: [""],
+        values: [0],
+        chart: "Polar",
+        description: "",
+      });
+    }
   }, [component.value]);
 
   //Drag handler
@@ -119,6 +129,10 @@ const ChartComponent = ({
 
   const saveHandler = (idx) => {
     updateComponent(notebookId, idx, data);
+  };
+
+  const onSaveHandler = () => {
+    saveHandler();
     setNotification({
       open: true,
       severity: "success",
@@ -127,21 +141,21 @@ const ChartComponent = ({
   };
 
   // Custom Blur Handler for parent component to save data
-  // const blurHandler = (e) => {
-  //   const currentTarget = e.currentTarget;
-  //   setTimeout(() => {
-  //     if (!currentTarget.contains(document.activeElement)) {
-  //       saveHandler(idx);
-  //     }
-  //   }, 0);
-  // };
-
-  const blurHandler = (idx) => {
-    updateComponent(notebookId, idx, data);
+  const blurHandler = (e, idx) => {
+    const currentTarget = e.currentTarget;
+    setTimeout(() => {
+      if (!currentTarget.contains(document.activeElement)) {
+        saveHandler(idx);
+      }
+    }, 0);
   };
 
+  // const blurHandler = (idx) => {
+  //   updateComponent(notebookId, idx, data);
+  // };
+
   return (
-    <div className={classes.split_wrapper} onBlur={() => blurHandler(idx)}>
+    <div className={classes.split_wrapper} onBlur={(e) => blurHandler(e, idx)}>
       <div className={classes.component_wrapper} key={idx}>
         <h3 className={classes.input}>{`In [ ${idx + 1} ] : `}</h3>
         <div
@@ -161,7 +175,7 @@ const ChartComponent = ({
           />
           <SaveOutlinedIcon
             className={classes.edit_icon}
-            onClick={() => saveHandler(idx)}
+            onClick={onSaveHandler}
           />
           <RefreshRoundedIcon
             className={classes.play_icon}

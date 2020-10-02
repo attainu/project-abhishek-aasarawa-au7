@@ -11,7 +11,7 @@ const Create = ({ notebooks }) => {
   const classes = useStyles();
   return (
     <div className={classes.parent}>
-      <NotebookTabs notebooks={notebooks} />
+      <NotebookTabs notebooks={notebooks} data-html2canvas-ignore />
     </div>
   );
 };

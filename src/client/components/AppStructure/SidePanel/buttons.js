@@ -20,6 +20,7 @@ import {
   addComponent,
   clearAllComponents,
   deleteNotebook,
+  runAllCode,
 } from "../../../Handlers";
 
 export const mainButtons = (isSignIn, toggleSignIn, history, addNotebook) => {
@@ -61,7 +62,6 @@ export const notebookButtons = (isSignIn, toggleSignIn, handleClick) => {
       Icon: () => <BuildRoundedIcon />,
       label: "Tools",
       onClick: (e) => {
-        console.log(e.currentTarget);
         handleClick(e);
       },
     },
@@ -69,8 +69,8 @@ export const notebookButtons = (isSignIn, toggleSignIn, handleClick) => {
       name: "Run All",
       Icon: () => <PlayCircleFilledRoundedIcon />,
       label: "Run All",
-      onClick: (e) => {
-        console.log(e.currentTarget);
+      onClick: () => {
+        runAllCode();
       },
     },
     {
