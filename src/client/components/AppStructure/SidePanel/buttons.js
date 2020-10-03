@@ -21,6 +21,9 @@ import {
   clearAllComponents,
   deleteNotebook,
   runAllCode,
+  saveNotebook,
+  allNotebooks,
+  shareNotebook,
 } from "../../../Handlers";
 
 export const mainButtons = (isSignIn, toggleSignIn, history, addNotebook) => {
@@ -40,7 +43,7 @@ export const mainButtons = (isSignIn, toggleSignIn, history, addNotebook) => {
       label: "All Notebooks",
       onClick: (e) => {
         if (!isSignIn) toggleSignIn();
-        console.log(e.currentTarget);
+        else allNotebooks();
       },
     },
     {
@@ -49,7 +52,7 @@ export const mainButtons = (isSignIn, toggleSignIn, history, addNotebook) => {
       label: "Shared Notebooks",
       onClick: (e) => {
         if (!isSignIn) toggleSignIn();
-        console.log(e.currentTarget);
+        if (history.location.pathname !== "/shared") history.push("/shared");
       },
     },
   ];
@@ -79,7 +82,7 @@ export const notebookButtons = (isSignIn, toggleSignIn, handleClick) => {
       label: "Save",
       onClick: (e) => {
         if (!isSignIn) toggleSignIn();
-        console.log(e.currentTarget);
+        else saveNotebook();
       },
     },
     {
@@ -96,7 +99,7 @@ export const notebookButtons = (isSignIn, toggleSignIn, handleClick) => {
       label: "Share",
       onClick: (e) => {
         if (!isSignIn) toggleSignIn();
-        console.log(e.currentTarget);
+        else shareNotebook();
       },
     },
     {

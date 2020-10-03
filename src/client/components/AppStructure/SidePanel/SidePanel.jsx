@@ -15,8 +15,9 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { connect } from "react-redux";
 import { isEmpty } from "lodash";
-import html2canvas from "html2canvas";
-import jspdf from "jspdf";
+import html2pdf from "html2pdf.js";
+// import html2canvas from "html2canvas";
+// import jspdf from "jspdf";
 
 // styles
 import useStyles from "./sidePanel.style";
@@ -52,44 +53,35 @@ const SidePanel = ({
   // For pdf------------------------------------------------------------------------
   const createPdf = async () => {
     try {
-      let compoHeight = pdfRef.current.clientHeight;
-      let compoWidth = pdfRef.current.clientWidth;
-      let ratio = compoHeight / compoWidth;
+      let element = pdfRef.current;
+      let divWidth = element.clientWidth;
+      let divHeight = element.clientHeight;
+      console.log("width ===>", divWidth);
+      console.log("width ===>", divHeight);
+      let opt = {
+        margin: [0, 0.2],
+        filename: "myNotebook.pdf",
+        enableLinks: true,
+        image: { type: "jpeg", quality: 0.98 },
+        pagebreak: { mode: ["css", "whiteline"], avoid: ".component_wrapper" },
+        html2canvas: {
+          scale: 2,
+          width: divWidth,
+          height: divHeight,
+          windowWidth: divWidth + 150,
+          scrollX: 0,
+          scrollY: 0,
+          ignoreElements: true,
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: "in",
+          format: "a4",
+          orientation: "portrait",
+        },
+      };
 
-      let canvas = await html2canvas(pdfRef.current, {
-        width: compoWidth,
-      });
-      console.log("canvas ===> ", canvas);
-      const imgData = canvas.toDataURL("image/png");
-      console.log("imgData ===> ", imgData);
-
-      // A4 size is default
-      const pdf = new jspdf();
-
-      // get image height
-      const imgProps = pdf.getImageProperties(imgData);
-      console.log(imgProps.height);
-
-      let width = pdf.internal.pageSize.getWidth();
-      let height = pdf.internal.pageSize.getHeight();
-
-      await pdf.addImage(imgData, "PNG", 0, 0, width - 20, height - 10);
-      let remainHeight = imgProps.height - height;
-
-      while (remainHeight > 0) {
-        await pdf.addPage();
-        await pdf.addImage(
-          imgData,
-          "PNG",
-          0,
-          remainHeight,
-          width - 20,
-          height - 10
-        );
-        remainHeight -= height;
-      }
-      console.log("pdf ===> ", pdf);
-      await pdf.save("download.pdf");
+      html2pdf().set(opt).from(element).save();
     } catch (err) {
       console.log(err);
     }
