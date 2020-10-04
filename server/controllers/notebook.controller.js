@@ -42,6 +42,11 @@ controller.all = catchError(async (req, res, next) => {
 
 // sharing notebook ------------------------------------------------------------------------------
 controller.share = catchError(async (req, res, next) => {
+  // if user try to share with himself
+  if (req.user.email === req.body.email)
+    return response(res, null, `You can't share with yourself`, true, 400);
+
+  // if not, find user
   let shareWith = await userModel.findOne({ email: req.body.email });
 
   // if user (with whom to share) not found
@@ -113,6 +118,17 @@ controller.received = catchError(async (req, res, next) => {
         200
       );
     });
+});
+
+// delete notebook ------------------------------------------------------------------------
+controller.delete = catchError(async (req, res, next) => {
+  let notebook = await notebookModel.findOneAndDelete({ id: req.body.id });
+  console.log("Notebook===>", notebook);
+  // if not found
+  if (!notebook)
+    return response(res, null, `Can't find the notebook`, true, 404);
+
+  response(res, null, "Notebook deleted successfully", false, 200);
 });
 
 export default controller;
