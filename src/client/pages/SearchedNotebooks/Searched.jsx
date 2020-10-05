@@ -3,7 +3,7 @@ import httpRequest from "../../config/axios.config";
 import { connect } from "react-redux";
 
 // styles
-import useStyles from "./allNotebooks.style";
+import useStyles from "./searched.style";
 
 // reducer actions
 import { SET_NOTIFICATION } from "../../redux/actions/notification.action";
@@ -11,7 +11,7 @@ import { SET_NOTIFICATION } from "../../redux/actions/notification.action";
 // components
 import NotebookList from "../../components/Notebooks/NotebookList/NotebookList";
 
-const AllNotebooks = ({ setNotification }) => {
+const SearchedNotebooks = ({ setNotification, history }) => {
   const classes = useStyles();
   const limit = 8;
 
@@ -24,16 +24,17 @@ const AllNotebooks = ({ setNotification }) => {
     prevPage: false,
   });
 
-  const pageNumber = page.pageNumber;
+  let pageNumber = page.pageNumber;
 
   // handlers
-  const fetchAllNotebooks = useCallback(async () => {
+  const fetchSearchedNotebooks = useCallback(async () => {
     try {
       let res = await httpRequest({
         method: "GET",
-        url: `http://localhost:5000/api/protected/all?page=${pageNumber}&limit=${limit}`,
+        url: `http://localhost:5000/api/public/search?query=${history.location.search.slice(
+          1
+        )}&page=${pageNumber}&limit=${limit}`,
       });
-
       const { notebooks, prevPage, nextPage } = res.data.data;
       setData(notebooks);
       setPage({ pageNumber, prevPage, nextPage });
@@ -45,19 +46,22 @@ const AllNotebooks = ({ setNotification }) => {
       });
     }
     setLoading(false);
-  }, [setNotification, pageNumber]);
+  }, [setNotification, history.location.search, pageNumber]);
 
   useEffect(() => {
-    fetchAllNotebooks();
-  }, [fetchAllNotebooks]);
+    fetchSearchedNotebooks();
+  }, [fetchSearchedNotebooks]);
 
   return (
     <div className={classes.wrapper}>
-      <h1 className={classes.heading}>All Notebooks</h1>
+      <h1 className={classes.heading}>
+        Search results for {history.location.search.slice(1)}
+      </h1>
       <div className={classes.list}>
         <NotebookList
           loading={loading}
           inputData={data}
+          type="Searched Notebooks"
           page={page}
           setPage={setPage}
         />
@@ -76,4 +80,4 @@ const mapActionToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapActionToProps)(AllNotebooks);
+export default connect(null, mapActionToProps)(SearchedNotebooks);
